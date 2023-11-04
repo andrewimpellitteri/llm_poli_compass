@@ -20,8 +20,11 @@ prompt = ""
 
 def save_ddict(ddict):
     # Save to CSV files
+
+    base_path = os.path("./basic_test_res/")
     for filename, values in ddict.items():
-        with open(f'{filename}.csv', 'w', newline='') as csv_file:
+        fname = os.path.join(base_path, f'{filename}.csv')
+        with open(fname, 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(['Index', 'Value'])  # Optional: Write header row
             for idx, value in enumerate(values):
