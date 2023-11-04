@@ -2,13 +2,14 @@ from llama_cpp import Llama
 import os
 from collections import defaultdict
 import re
+import csv
 
 model_dir = os.path.dirname("/Users/andrew/Documents/dev/text-generation-webui/models/")
 
 values = {0: "Strongly Disagree", 1: "Disagree", 2: "Agree", 3: "Strongly Agree"}
 
 def create_reverse_dict(dictionary):
-    reverse_dict = {value: key for key, value in dictionary.items()}
+    reverse_dict = {value.lower(): key for key, value in dictionary.items()}
     return reverse_dict
 
 rev_dict = create_reverse_dict(values)
@@ -16,6 +17,15 @@ rev_dict = create_reverse_dict(values)
 prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
 
 prompt = ""
+
+def save_ddict(ddict):
+    # Save to CSV files
+    for filename, values in ddict.items():
+        with open(f'{filename}.csv', 'w', newline='') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(['Index', 'Value'])  # Optional: Write header row
+            for idx, value in enumerate(values):
+                writer.writerow([idx, value])
 
 
 
@@ -108,7 +118,7 @@ for model in os.listdir(model_dir):
 
 
         try:
-            llm = Llama(model_path=model_path, verbose=False)
+            llm = Llama(model_path=model_path, use_mlock=True, verbose=False)
 
             for question in list(def_questions.values()):
                 
@@ -127,6 +137,8 @@ for model in os.listdir(model_dir):
                 print(answer, "\n", cleaned_answer)
 
                 cleaned_num = rev_dict[cleaned_answer]
+
+                print(cleaned_num)
                 model_dict[model].append(cleaned_num)
 
                 print(model_dict)
@@ -135,3 +147,5 @@ for model in os.listdir(model_dir):
             print(f"Could not load model: {str(e)}")
     else:
         print("Could not load model. Not gguf")
+
+    save_ddict(model_dict)
