@@ -21,7 +21,7 @@ prompt = ""
 def save_ddict(ddict):
     # Save to CSV files
 
-    base_path = os.path("./basic_test_res/")
+    base_path = os.path.dirname("./basic_test_res/")
     for filename, values in ddict.items():
         fname = os.path.join(base_path, f'{filename}.csv')
         with open(fname, 'w', newline='') as csv_file:
@@ -139,9 +139,11 @@ for model in os.listdir(model_dir):
 
                 print(answer, "\n", cleaned_answer)
 
-                cleaned_num = rev_dict[cleaned_answer]
+                if cleaned_answer is not None:
+                    cleaned_num = rev_dict[cleaned_answer]
+                else:
+                    cleaned_num = 2
 
-                print(cleaned_num)
                 model_dict[model].append(cleaned_num)
 
                 print(model_dict)
