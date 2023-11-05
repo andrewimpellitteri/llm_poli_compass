@@ -49,6 +49,13 @@ python test_llm.py model_path/classic_model.pth classic "Prompt format" --use_ml
 python test_llm.py model_path/model.gguf eightvalues "Prompt format" --no-show_plot --llm_verbose
 ```
 
+### Supported prompt formats
+
+- Llama-2
+- Alpaca
+- Vicuna
+- ChatLM
+
 ## License
 
 This utility is licensed under the [MIT License](LICENSE).

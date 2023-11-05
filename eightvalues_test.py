@@ -55,10 +55,10 @@ def clean_answer(answer):
         return None
 
 def update_arrs(mult, econ, dipl, govt, scty, qidx):
-    econ[qidx] = mult * effects[qidx]['econ']
-    dipl[qidx] = mult * effects[qidx]['dipl']
-    govt[qidx] = mult * effects[qidx]['govt']
-    scty[qidx] = mult * effects[qidx]['scty']
+    econ.append(mult * effects[qidx]['econ'])
+    dipl.append(mult * effects[qidx]['dipl'])
+    govt.append(mult * effects[qidx]['govt'])
+    scty.append(mult * effects[qidx]['scty'])
 
     return econ, dipl, govt, scty
 
