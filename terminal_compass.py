@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import os
 
 e0 = 0.38
 s0 = 2.41
@@ -167,51 +168,37 @@ def update_compass(state, econv, socv, e0, s0, DEBUG=False):
 
     return valE, valS
 
-# Example usage:
-state = [0] * 62  # Replace with your actual state list
+def plot_compass(state, model_path):
 
-new_x, new_y = update_compass(state, econv, socv, e0, s0, DEBUG=True)
+    new_x, new_y = update_compass(state, econv, socv, e0, s0, DEBUG=True)
+    # Create a scatter plot
+    fig, ax = plt.subplots()
 
-# Define data points for political figures or ideologies
-data = {
-    "Libertarian Left": (-5, -5),
-    "Libertarian Right": (5, -5),
-    "Authoritarian Left": (-5, 5),
-    "Authoritarian Right": (5, 5),
-}
+    # Set axis labels
+    ax.set_xlabel("Economic (Left <-----> Right)")
+    ax.set_ylabel("Social (Libertarian <-----> Authoritarian)")
 
-# Create a scatter plot
-fig, ax = plt.subplots()
+    ax.grid(True, linestyle='--', alpha=0.6, color='gray')  # Standard grid color
+    ax.axhline(0, color='black', lw=0.5)  # X-axis color
+    ax.axvline(0, color='black', lw=0.5)  # Y-axis color
 
-# Add labels for data points
-for label, (x, y) in data.items():
-    ax.text(x, y, label, fontsize=12, ha='center', va='center')
+    # Set axis limits
+    ax.set_xlim(-7, 7)
+    ax.set_ylim(-7, 7)
 
-# Set axis labels
-ax.set_xlabel("Economic (Left <-----> Right)")
-ax.set_ylabel("Social (Libertarian <-----> Authoritarian)")
+    # Title and legend
+    ax.set_title("Political Compass")
+    ax.legend(["Political Ideologies"])
 
-# Customize grid and tick marks with standard colors
-ax.grid(True, linestyle='--', alpha=0.6, color='gray')  # Standard grid color
-ax.axhline(0, color='black', lw=0.5)  # X-axis color
-ax.axvline(0, color='black', lw=0.5)  # Y-axis color
+    model_label = os.path.basename(model_path)
 
-# Set axis limits
-ax.set_xlim(-7, 7)
-ax.set_ylim(-7, 7)
-
-# Title and legend
-ax.set_title("Political Compass")
-ax.legend(["Political Ideologies"])
+    ax.scatter(new_x, new_y, color='red', marker='o', s=100, label=model_label)
 
 
-ax.scatter(new_x, new_y, color='red', marker='o', s=100, label='Your Red Dot')
+    # Fill the four quadrants with standard colors
+    ax.fill_between([-7, 0], -7, 0, color='green', alpha=0.2, label='Libertarian Left')  # Quadrant I
+    ax.fill_between([0, 7], -7, 0, color='yellow', alpha=0.2, label='Libertarian Right')  # Quadrant II
+    ax.fill_between([-7, 0], 0, 7, color='red', alpha=0.2, label='Authoritarian Left')  # Quadrant III
+    ax.fill_between([0, 7], 0, 7, color='blue', alpha=0.2, label='Authoritarian Right')  # Quadrant IV
 
-
-# Fill the four quadrants with standard colors
-ax.fill_between([-7, 0], -7, 0, color='green', alpha=0.2, label='Libertarian Left')  # Quadrant I
-ax.fill_between([0, 7], -7, 0, color='yellow', alpha=0.2, label='Libertarian Right')  # Quadrant II
-ax.fill_between([-7, 0], 0, 7, color='red', alpha=0.2, label='Authoritarian Left')  # Quadrant III
-ax.fill_between([0, 7], 0, 7, color='blue', alpha=0.2, label='Authoritarian Right')  # Quadrant IV
-
-plt.show()
+    plt.show()

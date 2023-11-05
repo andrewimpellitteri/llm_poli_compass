@@ -2,6 +2,9 @@ from llama_cpp import Llama
 import os
 import re
 import csv
+from chatformat import format_chat_prompt
+from terminal_compass import plot_compass
+
 
 model_dir = os.path.dirname("/Users/andrew/Documents/dev/text-generation-webui/models/")
 
@@ -109,7 +112,7 @@ def clean_answer(answer):
     else:
         return None
 
-def get_classic_test_results(model_path, mlock):
+def get_classic_test_results(model_path, mlock, show_plot):
 
     model_resps = []
 
@@ -120,13 +123,13 @@ def get_classic_test_results(model_path, mlock):
             
             final_prompt = f"{prompt_filler} : {question}"
 
-            final_prompt = f"""USER:
-                    {final_prompt}
-                    Assistant:"""
+            to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
+
+            final_prompt, stop_tokens = format_chat_prompt(template='llama-2', messages=to_llm_messages)
 
             print(final_prompt)
 
-            model_res = llm(final_prompt)
+            model_res = llm(final_prompt, stop=stop_tokens)
 
             cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
 
@@ -140,6 +143,8 @@ def get_classic_test_results(model_path, mlock):
             model_resps.append(cleaned_num)
 
         save_responses(model_resps, model_path)
+        if show_plot:
+            plot_compass(model_resps, model_path)
 
     except Exception as e:
         print(f"Could not load model: {str(e)}")
