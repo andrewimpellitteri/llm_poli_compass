@@ -5,9 +5,6 @@ import csv
 from chatformat import format_chat_prompt
 from terminal_compass import plot_compass
 
-
-model_dir = os.path.dirname("/Users/andrew/Documents/dev/text-generation-webui/models/")
-
 values = {0: "Strongly Disagree", 1: "Disagree", 2: "Agree", 3: "Strongly Agree"}
 
 def create_reverse_dict(dictionary):
@@ -18,20 +15,19 @@ rev_dict = create_reverse_dict(values)
 
 prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
 
-prompt = ""
-
 def save_responses(model_resps, model_path):
     # Save to CSV files
     model_name = os.path.basename(model_path)
-    base_path = os.path.dirname("./basic_test_results/")
-    for idx, values in enumerate(model_resps):
-        fname = os.path.join(base_path, f'{model_name}.csv')
-        with open(fname, 'w', newline='') as csv_file:
-            writer = csv.writer(csv_file)
-            for idx, value in enumerate(values):
-                writer.writerow([idx, value])
+    base_path = "./basic_test_results"  
 
+    # Create the base directory if it doesn't exist
+    os.makedirs(base_path, exist_ok=True)
 
+    fname = os.path.join(base_path, f'{model_name.split(".")[0]}.csv')
+    with open(fname, 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        for idx, values in enumerate(model_resps):
+            writer.writerow([idx, values])
 
 def_questions = {
 	1:	"If economic globalisation is inevitable, it should primarily serve humanity rather than the interests of trans-national corporations.",
@@ -112,12 +108,14 @@ def clean_answer(answer):
     else:
         return None
 
-def get_classic_test_results(model_path, mlock, show_plot):
+def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose):
 
     model_resps = []
 
     try:
-        llm = Llama(model_path=model_path, use_mlock=mlock, verbose=False)
+
+        llm = Llama(model_path=model_path, use_mlock=mlock, verbose=llm_verbose)
+
 
         for question in list(def_questions.values()):
             
@@ -127,13 +125,13 @@ def get_classic_test_results(model_path, mlock, show_plot):
 
             final_prompt, stop_tokens = format_chat_prompt(template='llama-2', messages=to_llm_messages)
 
-            print(final_prompt)
-
             model_res = llm(final_prompt, stop=stop_tokens)
 
             cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
-
-            print(cleaned_answer)
+            
+            if verbose:
+                print(final_prompt)
+                print(cleaned_answer)
 
             if cleaned_answer is not None:
                 cleaned_num = rev_dict[cleaned_answer]
@@ -142,7 +140,7 @@ def get_classic_test_results(model_path, mlock, show_plot):
 
             model_resps.append(cleaned_num)
 
-        save_responses(model_resps, model_path)
+            save_responses(model_resps, model_path)
         if show_plot:
             plot_compass(model_resps, model_path)
 

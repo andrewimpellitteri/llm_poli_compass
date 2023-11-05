@@ -1,29 +1,32 @@
 import json
 import math
 
-with open("8values_test/8values.github.io/questions.js") as f:
-    questions = f.read()
+def calc_score_max(score,max):
+        return round((100*(max+score)/(2*max)),1)
 
-questions = json.loads(questions)
+def calc_scores(econ_arr, dipl_arr, govt_arr, scty_arr):
+    with open("8values_test/8values.github.io/questions.js") as f:
+        questions = f.read()
 
-max_econ = max_dipl = max_govt = max_scty = 0
-# read in econ_array, dipl_array, govt_array, scty_array from file
+    questions = json.loads(questions)
 
-for question in questions:
-    max_econ += math.abs(question['effect']['econ'])
-    max_dipl += math.abs(question['effect']['dipl'])
-    max_govt += math.abs(question['effect']['govt'])
-    max_scty += math.abs(question['effect']['scty'])
+    max_econ = max_dipl = max_govt = max_scty = 0
 
-def calc_score(score,max):
-    return round((100*(max+score)/(2*max)),1)
+    for question in questions:
+        max_econ += math.abs(question['effect']['econ'])
+        max_dipl += math.abs(question['effect']['dipl'])
+        max_govt += math.abs(question['effect']['govt'])
+        max_scty += math.abs(question['effect']['scty'])
 
-final_econ = calc_score(sum(econ_arry),max_econ)
 
-final_econ = calc_score(sum(dipl_array),max_dipl)
+    final_econ = calc_score_max(sum(econ_arr),max_econ)
 
-final_econ = calc_score(sum(govt_array),max_govt)
+    final_dipl = calc_score_max(sum(dipl_arr),max_dipl)
 
-final_econ = calc_score(sum(scty_array),max_scty)
+    final_govt = calc_score_max(sum(govt_arr),max_govt)
+
+    final_scty = calc_score_max(sum(scty_arr),max_scty)
+
+    return [final_econ, final_dipl, final_govt, final_scty]
 
     

@@ -4,6 +4,14 @@ import os
 e0 = 0.38
 s0 = 2.41
 
+# import pandas as pd
+
+# df = pd.read_csv("basic_test_results/mistral-7b-instruct-v0.csv")
+# state = df[df.columns[1]].tolist()
+# state.append(0)
+# state.append(0)
+# print(len(state))
+
 econv = [
 [.5, 2.5, -2.5, -4.5],
     [7, 5, 0, -2],
@@ -157,14 +165,13 @@ def update_compass(state, econv, socv, e0, s0, DEBUG=False):
     valE = round(valE, 2)
     valS = round(valS, 2)
 
-    print(valE, valS)
-    valE = (valE + 50) / 100 * 14 - 7;
-    valS = (50 - valS) / 100 * 14 - 7;
+    valE = (valE + 50) / 100 * 14 - 7
+    valS = (50 - valS) / 100 * 14 - 7
 
 
     # Print the values (replace this with your actual HTML updating logic)
     # print(f"Economic {displayEcon} Social {displaySoc}")
-    print(f"CX: {valE}, CY: {valS}")
+    # print(f"CX: {valE}, CY: {valS}")
 
     return valE, valS
 
