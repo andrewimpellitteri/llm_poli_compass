@@ -161,3 +161,5 @@ cython_debug/
 
 basic_test_results/
 eightvalues_test_results
+
+.DS_Store
