@@ -39,7 +39,7 @@ if __name__ == '__main__':
         prompt = None
 
     if test_type.lower() == 'classic':
-        get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt)
+        get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format)
     else:
-        get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt)
+        get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format)
     

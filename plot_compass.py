@@ -181,7 +181,7 @@ def plot_compass(state, model_path):
     ax.set_ylim(-7, 7)
 
     # Title and legend
-    ax.set_title("Political Compass")
+    ax.set_title(f"Political Compass: {os.basename(model_path)}")
 
     model_label = os.path.basename(model_path)
 

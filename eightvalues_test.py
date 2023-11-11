@@ -23,8 +23,6 @@ def create_reverse_dict(dictionary):
 
 rev_dict = create_reverse_dict(weights)
 
-prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Neutral', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
-
 
 def save_responses(model_resps, model_path):
     # Save to CSV files
@@ -86,7 +84,7 @@ def average_over_runs(agg_list):
 
 
 
-def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt):
+def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format):
 
     econ = []
     dipl = []
@@ -97,6 +95,9 @@ def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verb
 
     if prompt is not None:
         prompt_filler = prompt
+    else:
+        prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Neutral', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
+
 
     try:
 
@@ -109,7 +110,7 @@ def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verb
 
                 to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
 
-                final_prompt, stop_tokens = format_chat_prompt(template='llama-2', messages=to_llm_messages)
+                final_prompt, stop_tokens = format_chat_prompt(template=prompt_format, messages=to_llm_messages)
 
                 model_res = llm(final_prompt, stop=stop_tokens)
 
@@ -137,7 +138,7 @@ def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verb
         save_responses(final_scores, model_path)
 
         if show_plot:
-            plot_eightvalues_data(final_scores, closest_ideo)
+            plot_eightvalues_data(final_scores, closest_ideo, model_path)
 
     except Exception as e:
         print(f"Could not load model: {str(e)}")

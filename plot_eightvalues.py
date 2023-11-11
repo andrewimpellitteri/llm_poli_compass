@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import math
 import json
+import os
 
 def find_ideology(values):
 
@@ -25,7 +26,7 @@ def find_ideology(values):
 
     return ideology
 
-def create_horizontal_bar(ax, labels, values, colors, closest_ideo):
+def create_horizontal_bar(ax, labels, values, colors, closest_ideo, model_path):
     for i, (left, right) in enumerate(values):
         left = left * 100
         right = right * 100
@@ -37,9 +38,9 @@ def create_horizontal_bar(ax, labels, values, colors, closest_ideo):
     ax.set_yticks(range(len(labels)))
     ax.set_yticklabels(labels)
     ax.set_xlabel('Percentage', labelpad=10)
-    ax.set_title(f"Closest Match: {closest_ideo}")
+    ax.set_title(f"{os.basename(model_path)} -> Closest Match: {closest_ideo}")
 
-def plot_eightvalues_data(data, closest_ideo):
+def plot_eightvalues_data(data, closest_ideo, model_path):
     categories = ['Equality <--> Markets', 'Nation <--> Globe', 'Liberty <--> Authority', 'Tradition <--> Progress']
 
     data = [v / 100 for v in data]
@@ -51,7 +52,7 @@ def plot_eightvalues_data(data, closest_ideo):
 
     colors = ['#f44336', '#00897b']
 
-    create_horizontal_bar(ax, categories, data, colors, closest_ideo)
+    create_horizontal_bar(ax, categories, data, colors, closest_ideo, model_path)
 
     plt.tight_layout(rect=[0, 0, 0.96, 0.96])
     plt.show()

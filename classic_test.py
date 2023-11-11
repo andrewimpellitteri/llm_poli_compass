@@ -134,12 +134,15 @@ def clean_answer(answer):
     else:
         return None
 
-def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt):
+def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format):
 
 	model_resps = []
 
 	if prompt is not None:
 		prompt_filler = prompt
+	else:
+		prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
+
 
 	try:
 
@@ -155,7 +158,7 @@ def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose,
 
 				to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
 
-				final_prompt, stop_tokens = format_chat_prompt(template='llama-2', messages=to_llm_messages)
+				final_prompt, stop_tokens = format_chat_prompt(template=prompt_format, messages=to_llm_messages)
 
 				model_res = llm(final_prompt, stop=stop_tokens)
 
