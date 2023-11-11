@@ -8,7 +8,7 @@ from calc_8values_scores import calc_scores
 from plot_eightvalues import plot_eightvalues_data, find_ideology
 from tqdm import tqdm
 
-with open("questions.js") as f:
+with open("questions.json") as f:
     questions = f.read()
 
 questions = json.loads(questions)
