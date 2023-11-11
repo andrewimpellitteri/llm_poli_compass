@@ -4,14 +4,6 @@ import os
 e0 = 0.38
 s0 = 2.41
 
-# import pandas as pd
-
-# df = pd.read_csv("basic_test_results/mistral-7b-instruct-v0.csv")
-# state = df[df.columns[1]].tolist()
-# state.append(0)
-# state.append(0)
-# print(len(state))
-
 econv = [
 [.5, 2.5, -2.5, -4.5],
     [7, 5, 0, -2],

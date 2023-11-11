@@ -4,6 +4,7 @@ import re
 import csv
 from chatformat import format_chat_prompt
 from terminal_compass import plot_compass
+from tqdm import tqdm
 
 values = {0: "Strongly Disagree", 1: "Disagree", 2: "Agree", 3: "Strongly Agree"}
 
@@ -117,7 +118,7 @@ def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose)
         llm = Llama(model_path=model_path, use_mlock=mlock, verbose=llm_verbose)
 
 
-        for question in list(def_questions.values()):
+        for question in tqdm(list(def_questions.values())):
             
             final_prompt = f"{prompt_filler} : {question}"
 

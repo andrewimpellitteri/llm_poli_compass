@@ -1,5 +1,4 @@
 import json
-import math
 
 def calc_score_max(score,max):
         return round((100*(max+score)/(2*max)),1)
@@ -13,10 +12,10 @@ def calc_scores(econ_arr, dipl_arr, govt_arr, scty_arr):
     max_econ = max_dipl = max_govt = max_scty = 0
 
     for question in questions:
-        max_econ += math.abs(question['effect']['econ'])
-        max_dipl += math.abs(question['effect']['dipl'])
-        max_govt += math.abs(question['effect']['govt'])
-        max_scty += math.abs(question['effect']['scty'])
+        max_econ += abs(question['effect']['econ'])
+        max_dipl += abs(question['effect']['dipl'])
+        max_govt += abs(question['effect']['govt'])
+        max_scty += abs(question['effect']['scty'])
 
 
     final_econ = calc_score_max(sum(econ_arr),max_econ)

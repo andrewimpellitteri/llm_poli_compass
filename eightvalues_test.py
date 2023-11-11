@@ -5,6 +5,8 @@ import csv
 from chatformat import format_chat_prompt
 import json
 from calc_8values_scores import calc_scores
+from plot_eightvalues import plot_eightvalues_data
+from tqdm import tqdm
 
 with open("8values_test/8values.github.io/questions.js") as f:
     questions = f.read()
@@ -24,7 +26,7 @@ rev_dict = create_reverse_dict(weights)
 prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Neutral', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
 
 
-def save_responses(model_resps, model_path, float_values):
+def save_responses(model_resps, model_path):
     # Save to CSV files
     model_name = os.path.basename(model_path)
     base_path = "./eightvalues_test_results"
@@ -37,7 +39,7 @@ def save_responses(model_resps, model_path, float_values):
         writer = csv.writer(csv_file)
 
         # Write the four float values to a single row
-        writer.writerow(float_values)
+        writer.writerow(model_resps)
 
 
 def clean_answer(answer):
@@ -76,7 +78,7 @@ def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verb
         llm = Llama(model_path=model_path, use_mlock=mlock, verbose=llm_verbose)
 
 
-        for qidx, question in enumerate(questions):
+        for qidx, question in tqdm(enumerate(questions)):
             
             final_prompt = f"{prompt_filler} : {question}"
 
@@ -104,7 +106,7 @@ def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verb
         save_responses(final_scores, model_path)
 
         if show_plot:
-            # plot_compass(model_resps, model_path)
-            pass
+            plot_eightvalues_data(final_scores)
+
     except Exception as e:
         print(f"Could not load model: {str(e)}")
