@@ -1,3 +1,4 @@
 chatformat==1.1
 docopt==0.6.1
 matplotlib==3.8.0
+tqdm==4.66.1
