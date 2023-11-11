@@ -24,7 +24,7 @@ test_llm [MODEL_PATH] [TEST_TYPE] [PROMPT_FORMAT] [options]
 1. Clone this repository to your local machine.
 
 ```
-git clone https://github.com/andrewimpellitteri/test-llm-utility.git
+git clone https://github.com/andrewimpellitteri/llm_poli_compass.git
 ```
 
 2. Install the required dependencies using pip.
