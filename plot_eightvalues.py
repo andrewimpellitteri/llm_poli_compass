@@ -38,7 +38,7 @@ def create_horizontal_bar(ax, labels, values, colors, closest_ideo, model_path):
     ax.set_yticks(range(len(labels)))
     ax.set_yticklabels(labels)
     ax.set_xlabel('Percentage', labelpad=10)
-    ax.set_title(f"{os.basename(model_path)} -> Closest Match: {closest_ideo}")
+    ax.set_title(f"{os.path.basename(model_path)} -> Closest Match: {closest_ideo}")
 
 def plot_eightvalues_data(data, closest_ideo, model_path):
     categories = ['Equality <--> Markets', 'Nation <--> Globe', 'Liberty <--> Authority', 'Tradition <--> Progress']

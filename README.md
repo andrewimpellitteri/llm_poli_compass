@@ -66,6 +66,10 @@ but can be changed with the `-p` flag.
 
 Utilizes the [chatformat](https://github.com/Mwni/chatformat/tree/main) library, allowing you to incorporate your custom templates
 
+## Contribute
+
+Feel free to add features or suggest improvements.
+
 ## License
 
 This utility is licensed under the [MIT License](https://mit-license.org/).
