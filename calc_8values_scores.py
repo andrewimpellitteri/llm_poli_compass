@@ -4,7 +4,7 @@ def calc_score_max(score,max):
         return round((100*(max+score)/(2*max)),1)
 
 def calc_scores(econ_arr, dipl_arr, govt_arr, scty_arr):
-    with open("8values_test/8values.github.io/questions.js") as f:
+    with open("questions.js") as f:
         questions = f.read()
 
     questions = json.loads(questions)

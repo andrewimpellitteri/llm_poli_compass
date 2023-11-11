@@ -7,6 +7,7 @@ Options:
 --verbose
 --llm_verbose
 -r runs
+-p prompt
 """
 
 from classic_test import get_classic_test_results
@@ -27,11 +28,18 @@ if __name__ == '__main__':
     show_plot = not arguments.get('--no-show_plot', False)  # Set show_plot to True by default
     
     runs = int(arguments['-r'] or 1)
+    print(f"runs: {runs}")
     verbose = arguments["--verbose"]
     llm_verbose = arguments["--llm_verbose"]
 
-    if test_type.lower() == 'classic':
-        get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs)
+    # Check if the "--prompt" key exists
+    if "-p" in arguments:
+        prompt = arguments["-p"]
     else:
-        get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs)
+        prompt = None
+
+    if test_type.lower() == 'classic':
+        get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt)
+    else:
+        get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt)
     

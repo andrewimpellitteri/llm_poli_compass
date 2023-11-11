@@ -5,10 +5,10 @@ import csv
 from chatformat import format_chat_prompt
 import json
 from calc_8values_scores import calc_scores
-from plot_eightvalues import plot_eightvalues_data
+from plot_eightvalues import plot_eightvalues_data, find_ideology
 from tqdm import tqdm
 
-with open("8values_test/8values.github.io/questions.js") as f:
+with open("questions.js") as f:
     questions = f.read()
 
 questions = json.loads(questions)
@@ -64,49 +64,80 @@ def update_arrs(mult, econ, dipl, govt, scty, qidx):
 
     return econ, dipl, govt, scty
 
+def average_over_runs(agg_list):
+    # Number of arrays
+    num_arrays = len(agg_list)
+
+    # Number of elements in each array
+    num_elements = len(agg_list[0])
+
+    # Initialize averages list
+    averages = [0] * num_elements
+
+    # Calculate averages
+    for i in range(num_elements):
+        # Sum the i-th element of each array
+        element_sum = sum(array[i] for array in agg_list)
+        
+        # Calculate the average for the i-th element
+        averages[i] = element_sum / num_arrays
+    
+    return averages
 
 
-def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs):
+
+def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt):
 
     econ = []
     dipl = []
     govt = []
     scty = []
 
+    agg_scores = []
+
+    if prompt is not None:
+        prompt_filler = prompt
+
     try:
 
         llm = Llama(model_path=model_path, use_mlock=mlock, verbose=llm_verbose)
 
+        for _ in range(runs):
+            for qidx, question in enumerate(tqdm(questions)):
+                
+                final_prompt = f"{prompt_filler} : {question}"
 
-        for qidx, question in tqdm(enumerate(questions)):
-            
-            final_prompt = f"{prompt_filler} : {question}"
+                to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
 
-            to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
+                final_prompt, stop_tokens = format_chat_prompt(template='llama-2', messages=to_llm_messages)
 
-            final_prompt, stop_tokens = format_chat_prompt(template='llama-2', messages=to_llm_messages)
+                model_res = llm(final_prompt, stop=stop_tokens)
 
-            model_res = llm(final_prompt, stop=stop_tokens)
+                cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
+                
+                if verbose:
+                    print(final_prompt)
+                    print(cleaned_answer)
 
-            cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
-            
-            if verbose:
-                print(final_prompt)
-                print(cleaned_answer)
+                if cleaned_answer is not None:
+                    cleaned_num = rev_dict[cleaned_answer]
+                else:
+                    cleaned_num = 0
 
-            if cleaned_answer is not None:
-                cleaned_num = rev_dict[cleaned_answer]
-            else:
-                cleaned_num = 0
+                econ, dipl, govt, scty = update_arrs(cleaned_num, econ, dipl, govt, scty, qidx)
 
-            econ, dipl, govt, scty = update_arrs(cleaned_num, econ, dipl, govt, scty, qidx)
+            final_scores = calc_scores(econ, dipl, govt, scty)
 
-        final_scores = calc_scores(econ, dipl, govt, scty)
+            agg_scores.append(final_scores)
+
+        final_scores = average_over_runs(agg_scores)
+
+        closest_ideo = find_ideology(final_scores)
 
         save_responses(final_scores, model_path)
 
         if show_plot:
-            plot_eightvalues_data(final_scores)
+            plot_eightvalues_data(final_scores, closest_ideo)
 
     except Exception as e:
         print(f"Could not load model: {str(e)}")

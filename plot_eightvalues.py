@@ -2,14 +2,13 @@ import matplotlib.pyplot as plt
 import math
 import json
 
-# Assuming the JSON is in a file named ideologies.json
-file_path = '/Users/andrew/Documents/dev/llm_poli_compass/llm_poli_compass/ideologies.json'
+def find_ideology(values):
 
-with open(file_path, 'r') as file:
-    ideologies = json.load(file)
+    file_path = 'ideologies.json'
 
+    with open(file_path, 'r') as file:
+        ideologies = json.load(file)
 
-def find_ideology(ideologies, values):
     ideology = ""
     ideodist = float('inf')
 

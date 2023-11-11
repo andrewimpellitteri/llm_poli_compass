@@ -160,11 +160,6 @@ def update_compass(state, econv, socv, e0, s0, DEBUG=False):
     valE = (valE + 50) / 100 * 14 - 7
     valS = (50 - valS) / 100 * 14 - 7
 
-
-    # Print the values (replace this with your actual HTML updating logic)
-    # print(f"Economic {displayEcon} Social {displaySoc}")
-    # print(f"CX: {valE}, CY: {valS}")
-
     return valE, valS
 
 def plot_compass(state, model_path):

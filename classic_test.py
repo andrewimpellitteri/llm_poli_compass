@@ -3,8 +3,9 @@ import os
 import re
 import csv
 from chatformat import format_chat_prompt
-from terminal_compass import plot_compass
+from plot_compass import plot_compass
 from tqdm import tqdm
+import math
 
 values = {0: "Strongly Disagree", 1: "Disagree", 2: "Agree", 3: "Strongly Agree"}
 
@@ -29,6 +30,30 @@ def save_responses(model_resps, model_path):
         writer = csv.writer(csv_file)
         for idx, values in enumerate(model_resps):
             writer.writerow([idx, values])
+
+
+def average_over_runs(agg_list):
+    # Number of arrays
+    num_arrays = len(agg_list)
+
+    # Number of elements in each array
+    num_elements = len(agg_list[0])
+
+    # Initialize averages list
+    averages = [0] * num_elements
+
+    # Calculate averages
+    for i in range(num_elements):
+        # Sum the i-th element of each array
+        element_sum = sum(array[i] for array in agg_list)
+        
+        # Calculate the average for the i-th element
+        averages[i] = element_sum / num_arrays
+
+
+
+    return [math.ceil(e) for e in averages]
+
 
 def_questions = {
 	1:	"If economic globalisation is inevitable, it should primarily serve humanity rather than the interests of trans-national corporations.",
@@ -109,41 +134,49 @@ def clean_answer(answer):
     else:
         return None
 
-def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs):
+def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt):
 
-    model_resps = []
+	model_resps = []
 
-    try:
+	if prompt is not None:
+		prompt_filler = prompt
 
-        llm = Llama(model_path=model_path, use_mlock=mlock, verbose=llm_verbose)
+	try:
 
+		llm = Llama(model_path=model_path, use_mlock=mlock, verbose=llm_verbose)
 
-        for question in tqdm(list(def_questions.values())):
-            
-            final_prompt = f"{prompt_filler} : {question}"
+		agg_resps = []
+		
+		for _ in range(runs):
 
-            to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
+			for question in tqdm(list(def_questions.values())):
+				
+				final_prompt = f"{prompt_filler} : {question}"
 
-            final_prompt, stop_tokens = format_chat_prompt(template='llama-2', messages=to_llm_messages)
+				to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
 
-            model_res = llm(final_prompt, stop=stop_tokens)
+				final_prompt, stop_tokens = format_chat_prompt(template='llama-2', messages=to_llm_messages)
 
-            cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
-            
-            if verbose:
-                print(final_prompt)
-                print(cleaned_answer)
+				model_res = llm(final_prompt, stop=stop_tokens)
 
-            if cleaned_answer is not None:
-                cleaned_num = rev_dict[cleaned_answer]
-            else:
-                cleaned_num = 2
+				cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
+				
+				if verbose:
+					print(final_prompt)
+					print(cleaned_answer)
 
-            model_resps.append(cleaned_num)
+				if cleaned_answer is not None:
+					cleaned_num = rev_dict[cleaned_answer]
+				else:
+					cleaned_num = 2
 
-            save_responses(model_resps, model_path)
-        if show_plot:
-            plot_compass(model_resps, model_path)
+				model_resps.append(cleaned_num)
+			agg_resps.append(model_resps)
+		
+		model_resps = average_over_runs(agg_resps)
+		save_responses(model_resps, model_path)
+		if show_plot:
+			plot_compass(model_resps, model_path)
 
-    except Exception as e:
-        print(f"Could not load model: {str(e)}")
+	except Exception as e:
+		print(f"Could not load model: {str(e)}")
