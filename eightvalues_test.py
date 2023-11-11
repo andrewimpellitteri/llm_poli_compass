@@ -66,7 +66,7 @@ def update_arrs(mult, econ, dipl, govt, scty, qidx):
 
 
 
-def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose):
+def get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs):
 
     econ = []
     dipl = []

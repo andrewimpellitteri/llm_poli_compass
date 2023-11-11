@@ -6,7 +6,7 @@ Options:
 --no-show_plot
 --verbose
 --llm_verbose
-
+-r runs
 """
 
 from classic_test import get_classic_test_results
@@ -26,11 +26,12 @@ if __name__ == '__main__':
     prompt_format = arguments["PROMPT_FORMAT"]
     show_plot = not arguments.get('--no-show_plot', False)  # Set show_plot to True by default
     
+    runs = int(arguments['-r'] or 1)
     verbose = arguments["--verbose"]
     llm_verbose = arguments["--llm_verbose"]
 
     if test_type.lower() == 'classic':
-        get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose)
+        get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs)
     else:
-        get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose)
+        get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs)
     

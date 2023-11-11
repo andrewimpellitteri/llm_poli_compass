@@ -56,7 +56,7 @@ python test_llm.py model_path/model.gguf eightvalues "Prompt format" --no-show_p
 - Vicuna
 - ChatLM
 
-Utilizes the (chatformat)[https://github.com/Mwni/chatformat/tree/main] library, allowing you to incorporate your custom templates
+Utilizes the [chatformat](https://github.com/Mwni/chatformat/tree/main) library, allowing you to incorporate your custom templates
 
 ## License
 

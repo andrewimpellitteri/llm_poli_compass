@@ -109,7 +109,7 @@ def clean_answer(answer):
     else:
         return None
 
-def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose):
+def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs):
 
     model_resps = []
 

@@ -187,7 +187,6 @@ def plot_compass(state, model_path):
 
     # Title and legend
     ax.set_title("Political Compass")
-    ax.legend(["Political Ideologies"])
 
     model_label = os.path.basename(model_path)
 
