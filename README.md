@@ -10,6 +10,8 @@ A utility for running tests on language models to evaluate their political bias.
 test_llm [MODEL_PATH] [TEST_TYPE] [PROMPT_FORMAT] [options]
 ```
 
+- `TEST_TYPE`: either `classic` or `eight`
+
 ### Options
 
 - `--use_mlock`: Use mlock for memory management.
@@ -39,19 +41,6 @@ pip install -r requirements.txt
 python test_llm.py [MODEL_PATH] [TEST_TYPE] [PROMPT_FORMAT] [options]
 ```
 
-## Example Usages
-
-### Run a classic test on a language model:
-
-```
-python test_llm.py model_path/classic_model.pth classic "Prompt format" --use_mlock --verbose
-```
-
-### Run an eightvalues test on a language model:
-
-```
-python test_llm.py model_path/model.gguf eightvalues "Prompt format" --no-show_plot --llm_verbose -r 3
-```
 ### Preprompt
 
 This is currently the pre-prompt instruction:
