@@ -2,6 +2,7 @@
 
 A utility for running tests on language models to evaluate their political bias. It supports both [classic](https://www.politicalcompass.org/) and [eightvalues](https://8values.github.io/) tests with various options. Uses the [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) library for calling the llm.
 
+![classic](https://github.com/andrewimpellitteri/llm_poli_compass/blob/main/imgs/eight.png)
 ![8values](https://github.com/andrewimpellitteri/llm_poli_compass/blob/main/imgs/eight.png)
 
 ## Usage
@@ -20,6 +21,8 @@ test_llm [MODEL_PATH] [TEST_TYPE] [PROMPT_FORMAT] [options]
 - `--llm_verbose`: Enable verbose mode for the language model.
 - `-r`: Specify the number of runs to average over
 - `-p`: Specify custom pre-prompt
+- `--plot_all_classic`: plot all the classic tests run in one plot
+- `-plot_all_eightvalues`: plot all the eightvalues tests run in one plot
 
 ## Getting Started
 

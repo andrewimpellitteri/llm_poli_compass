@@ -152,6 +152,8 @@ def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose,
 		
 		for _ in range(runs):
 
+			model_resps = []
+
 			for question in tqdm(list(def_questions.values())):
 				
 				final_prompt = f"{prompt_filler} : {question}"
