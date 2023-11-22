@@ -16,6 +16,7 @@ from classic_test import get_classic_test_results
 from eightvalues_test import get_eightvalues_test_results
 from docopt import docopt
 from plot_all import plot_all_classic, plot_all_eightvalues
+from left_right_bias import get_lr_bias_test
 
 run_classic_test = True
 
@@ -46,6 +47,9 @@ if __name__ == '__main__':
 
     if test_type.lower() == 'classic':
         get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format)
+
+    if test_type.lower() == 'lr_bias':
+        get_lr_bias_test(model_path, mlock, llm_verbose, runs, prompt_format)
     else:
         get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format)
 

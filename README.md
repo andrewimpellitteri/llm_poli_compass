@@ -1,6 +1,6 @@
 # Political Compass Test LLM (Large Language Model) Utility
 
-A utility for running tests on language models to evaluate their political bias. It supports both [classic](https://www.politicalcompass.org/) and [eightvalues](https://8values.github.io/) tests with various options. Uses the [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) library for calling the llm.
+A utility for running tests on language models to evaluate their political bias. It supports both [classic](https://www.politicalcompass.org/) and [eightvalues](https://8values.github.io/) tests with various options, along with a specialized left-right bias evaluation test. Uses the [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) library for calling the llm.
 
 ![classic](https://github.com/andrewimpellitteri/llm_poli_compass/blob/main/imgs/classic.png)
 ![8values](https://github.com/andrewimpellitteri/llm_poli_compass/blob/main/imgs/eight.png)
@@ -11,7 +11,7 @@ A utility for running tests on language models to evaluate their political bias.
 test_llm [MODEL_PATH] [TEST_TYPE] [PROMPT_FORMAT] [options]
 ```
 
-- `TEST_TYPE`: either `classic` or `eight`
+- `TEST_TYPE`: either `classic`, `eight`, `lr_bias`
 
 ### Options
 
