@@ -3,6 +3,7 @@ import os
 from plot_compass import update_compass, econv, socv, e0, s0
 from plot_eightvalues import find_ideology, create_horizontal_bar
 import math
+import pickle
 
 def plot_all_classic():
 
@@ -112,7 +113,23 @@ def plot_all_eightvalues():
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
 
-def plot_character_results(model_path, character_resps):
+def plot_character_results(model_path, character_resps, load_from_file=None):
+
+    char_colors = {
+    "Lib-Left": "green", 
+    
+    "Lib-Right": "yellow",
+    
+    "Auth-Left": "red",
+    
+    "Auth-Right": "blue"
+    }
+
+
+    if load_from_file is not None:
+        with open(load_from_file, 'rb') as f:
+            character_resps = pickle.load(f)
+        model_path = os.path.basename(load_from_file)
 
     # Create a scatter plot
     fig, ax = plt.subplots()
@@ -135,12 +152,11 @@ def plot_character_results(model_path, character_resps):
     ax.fill_between([-7, 0], 0, 7, color='red', alpha=0.2, label='Authoritarian Left')  # Quadrant III
     ax.fill_between([0, 7], 0, 7, color='blue', alpha=0.2, label='Authoritarian Right')  # Quadrant IV
 
-    cmap = plt.get_cmap('tab10')
     scatter_handles = []
 
     all_vals = []
 
-    for i, (character, state) in enumerate(character_resps):
+    for i, (character, state) in enumerate(character_resps.items()):
 
         print(state, model_path)
         
@@ -148,9 +164,7 @@ def plot_character_results(model_path, character_resps):
 
         all_vals.append((new_x, new_y))
 
-        color = cmap(i % cmap.N)
-
-        scatter = ax.scatter(new_x, new_y, color=color, marker='o', s=100, label=character)
+        scatter = ax.scatter(new_x, new_y, color=char_colors[character], marker='o', s=100, label=character)
 
         scatter_handles.append(scatter)
 
@@ -160,7 +174,9 @@ def plot_character_results(model_path, character_resps):
         avg_x = sum(x_coords) / len(all_vals)
         avg_y = sum(y_coords) / len(all_vals)
 
-    scatter = ax.scatter(avg_x, avg_y, color='red', marker='o', s=100, label='Average')
+    scatter = ax.scatter(avg_x, avg_y, color='black', marker='o', s=100, label='Average')
+
+    scatter_handles.append(scatter)
 
     # Title and legend
     ax.set_title(f"Political Compass: {os.path.basename(model_path)}")

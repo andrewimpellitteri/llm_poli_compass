@@ -169,15 +169,16 @@ def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose,
 
         agg_resps = []
         
-        for _ in range(runs):
+        for _ in tqdm(range(runs), desc="runs"):
 
             model_resps = []
 
-            for question in tqdm(list(def_questions.values())):
-                
-                final_prompt = f"{prompt_filler} : {question}"
+            for question in tqdm(list(def_questions.values()), desc="questions"):
 
-                to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
+                to_llm_messages = [
+					{'role': 'user', 'content': question},
+					{'role': 'system', 'content': prompt_filler}
+				]
 
                 final_prompt, stop_tokens = format_chat_prompt(template=prompt_format, messages=to_llm_messages)
 

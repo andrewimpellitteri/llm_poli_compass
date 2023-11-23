@@ -3,6 +3,7 @@ from collections import defaultdict
 import os
 import pickle
 from plot_all import plot_character_results
+from tqdm import tqdm
 
 character_prompts = {
     "Lib-Left": "an individual who advocates for both individual liberties and economically leans towards left-wing ideologies. They prioritize personal freedom, voluntary cooperation, and advocate for social equality and justice through collective action.",
@@ -26,13 +27,16 @@ def save_char_responses(model_path, character_resps):
         pickle.dump(character_resps, file)
 
 
-def get_character_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt_format):
+def get_character_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt_format, plot_file):
+
+    if plot_file is not None:
+        plot_character_results(model_path, [], load_from_file=plot_file)
     
-    orig_prompt_filler = " using one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
+    orig_prompt_filler = "You must use exactly one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options in your answers. The question is: "
 
     character_resps = defaultdict(list)
 
-    for character in character_prompts.keys():
+    for character in tqdm(character_prompts.keys(), desc="character"):
         
         character_prompt = f"Answer the following political question acting as a person who is {character_prompts[character]}"
         

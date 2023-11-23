@@ -10,6 +10,7 @@ Options:
 -p prompt
 --plot_all_classic
 --plot_all_eightvalues
+-l load_from_file
 """
 
 from classic_test import get_classic_test_results
@@ -40,6 +41,8 @@ if __name__ == '__main__':
     verbose = arguments["--verbose"]
     llm_verbose = arguments["--llm_verbose"]
 
+    load_from_file = arguments["-l"]
+
     # Check if the "--prompt" key exists
     if "-p" in arguments:
         prompt = arguments["-p"]
@@ -53,7 +56,7 @@ if __name__ == '__main__':
         get_lr_bias_test(model_path, mlock, llm_verbose, runs, prompt_format)
 
     if test_type.lower() == 'character':
-        get_character_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt_format)
+        get_character_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt_format, load_from_file)
     else:
         get_eightvalues_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format)
 
