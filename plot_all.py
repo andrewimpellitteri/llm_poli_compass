@@ -112,3 +112,52 @@ def plot_all_eightvalues():
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
 
+def plot_character_results(model_path, character_resps):
+
+    # Create a scatter plot
+    fig, ax = plt.subplots()
+
+    # Set axis labels
+    ax.set_xlabel("Economic (Left <-----> Right)")
+    ax.set_ylabel("Social (Libertarian <-----> Authoritarian)")
+
+    ax.grid(True, linestyle='--', alpha=0.6, color='gray')  # Standard grid color
+    ax.axhline(0, color='black', lw=0.5)  # X-axis color
+    ax.axvline(0, color='black', lw=0.5)  # Y-axis color
+
+    # Set axis limits
+    ax.set_xlim(-7, 7)
+    ax.set_ylim(-7, 7)
+
+    # Fill the four quadrants with standard colors
+    ax.fill_between([-7, 0], -7, 0, color='green', alpha=0.2, label='Libertarian Left')  # Quadrant I
+    ax.fill_between([0, 7], -7, 0, color='yellow', alpha=0.2, label='Libertarian Right')  # Quadrant II
+    ax.fill_between([-7, 0], 0, 7, color='red', alpha=0.2, label='Authoritarian Left')  # Quadrant III
+    ax.fill_between([0, 7], 0, 7, color='blue', alpha=0.2, label='Authoritarian Right')  # Quadrant IV
+
+    titles = []
+
+    cmap = plt.get_cmap('tab10')
+    scatter_handles = []
+
+
+    for i, (character, state) in enumerate(character_resps):
+
+        print(state, model_path)
+        
+        new_x, new_y = update_compass(state, econv, socv, e0, s0, DEBUG=True)
+
+        color = cmap(i % cmap.N)
+
+        scatter = ax.scatter(new_x, new_y, color=color, marker='o', s=100, label=character)
+
+        scatter_handles.append(scatter)
+
+    final_title = "\n".join(titles)
+
+    # Title and legend
+    ax.set_title(f"Political Compass: {final_title}")
+        
+    ax.legend(handles=scatter_handles, loc='upper left')
+
+    plt.show()

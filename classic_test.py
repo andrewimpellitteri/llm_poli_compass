@@ -6,6 +6,9 @@ from chatformat import format_chat_prompt
 from plot_compass import plot_compass
 from tqdm import tqdm
 import math
+from transformers import pipeline
+
+sentiment_analysis_distilbert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
 values = {0: "Strongly Disagree", 1: "Disagree", 2: "Agree", 3: "Strongly Agree"}
 
@@ -122,7 +125,7 @@ def_questions = {
 
 def clean_answer(answer):
     # Define the allowed values
-    allowed_values = ["agree", "disagree", "strongly disagree", "strongly agree"]
+    allowed_values = ["strongly disagree","disagree", "agree", "strongly agree"]
 
     # Create a regular expression pattern
     pattern = fr"({'|'.join(re.escape(value) for value in allowed_values)})"
@@ -132,56 +135,81 @@ def clean_answer(answer):
     if match:
         return match.group()
     else:
+        # Perform sentiment analysis
+        result = sentiment_analysis_distilbert(answer)
+        predicted_sentiment = result[0]['label']
+        confidence_score = result[0]['score']
+
+        # Map sentiment labels to allowed values based on confidence score
+        if predicted_sentiment == 'POSITIVE':
+            if confidence_score > 0.9:
+                return 'strongly agree'
+            elif confidence_score > 0.5:
+                return 'agree'
+        elif predicted_sentiment == 'NEGATIVE':
+            if confidence_score > 0.9:
+                return 'strongly disagree'
+            elif confidence_score > 0.5:
+                return 'disagree'
         return None
 
-def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format):
+def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format, character_mode=False):
 
-	model_resps = []
+    model_resps = []
 
-	if prompt is not None:
-		prompt_filler = prompt
-	else:
-		prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
+    if prompt is not None:
+        prompt_filler = prompt
+    else:
+        prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
 
 
-	try:
+    try:
 
-		llm = Llama(model_path=model_path, use_mlock=mlock, verbose=llm_verbose)
+        llm = Llama(model_path=model_path, use_mlock=mlock, verbose=llm_verbose)
 
-		agg_resps = []
-		
-		for _ in range(runs):
+        agg_resps = []
+        
+        for _ in range(runs):
 
-			model_resps = []
+            model_resps = []
 
-			for question in tqdm(list(def_questions.values())):
-				
-				final_prompt = f"{prompt_filler} : {question}"
+            for question in tqdm(list(def_questions.values())):
+                
+                final_prompt = f"{prompt_filler} : {question}"
 
-				to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
+                to_llm_messages = [{'role': 'user', 'content': f"{final_prompt}"}]
 
-				final_prompt, stop_tokens = format_chat_prompt(template=prompt_format, messages=to_llm_messages)
+                final_prompt, stop_tokens = format_chat_prompt(template=prompt_format, messages=to_llm_messages)
 
-				model_res = llm(final_prompt, stop=stop_tokens)
+                model_res = llm(final_prompt, max_tokens=200, stop=stop_tokens)
 
-				cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
-				
-				if verbose:
-					print(final_prompt)
-					print(cleaned_answer)
+                print(f"Raw Response: {model_res['choices'][0]['text'].lower()}")
 
-				if cleaned_answer is not None:
-					cleaned_num = rev_dict[cleaned_answer]
-				else:
-					cleaned_num = 2
+                cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
+                
+                if verbose:
+                    print(final_prompt)
+                    print(cleaned_answer)
 
-				model_resps.append(cleaned_num)
-			agg_resps.append(model_resps)
-		
-		model_resps = average_over_runs(agg_resps)
-		save_responses(model_resps, model_path)
-		if show_plot:
-			plot_compass(model_resps, model_path)
+                if cleaned_answer is not None:
+                    cleaned_num = rev_dict[cleaned_answer]
+                else:
+                    cleaned_num = 2
 
-	except Exception as e:
-		print(f"Could not load model: {str(e)}")
+                model_resps.append(cleaned_num)
+            agg_resps.append(model_resps)
+        
+        model_resps = average_over_runs(agg_resps)
+
+        return model_resps
+        
+        if not character_mode:
+            save_responses(model_resps, model_path)
+            
+            if show_plot:
+                plot_compass(model_resps, model_path)
+
+            return None
+
+    except Exception as e:
+        print(f"Could not load model: {str(e)}")

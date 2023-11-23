@@ -7,6 +7,9 @@ import json
 from calc_8values_scores import calc_scores
 from plot_eightvalues import plot_eightvalues_data, find_ideology
 from tqdm import tqdm
+from transformers import pipeline
+
+sentiment_analysis_distilbert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
 with open("questions.json") as f:
     questions = f.read()
@@ -52,7 +55,18 @@ def clean_answer(answer):
     if match:
         return match.group()
     else:
+        # Perform sentiment analysis
+        result = sentiment_analysis_distilbert(answer)
+        predicted_sentiment = result[0]['label']
+
+        # Mapping sentiment labels to allowed values
+        if predicted_sentiment == 'POSITIVE':
+            return 'Agree' if result[0]['score'] > 0.5 else 'Strongly Agree'
+        elif predicted_sentiment == 'NEGATIVE':
+            return 'Disagree' if result[0]['score'] > 0.5 else 'Strongly Disagree'
+
         return None
+        
 
 def update_arrs(mult, econ, dipl, govt, scty, qidx):
     econ.append(mult * effects[qidx]['econ'])
