@@ -160,6 +160,7 @@ cython_debug/
 #.idea/
 
 basic_test_results/
-eightvalues_test_results
+eightvalues_test_results/
+character_test_results/
 
 .DS_Store
