@@ -135,11 +135,10 @@ def plot_character_results(model_path, character_resps):
     ax.fill_between([-7, 0], 0, 7, color='red', alpha=0.2, label='Authoritarian Left')  # Quadrant III
     ax.fill_between([0, 7], 0, 7, color='blue', alpha=0.2, label='Authoritarian Right')  # Quadrant IV
 
-    titles = []
-
     cmap = plt.get_cmap('tab10')
     scatter_handles = []
 
+    all_vals = []
 
     for i, (character, state) in enumerate(character_resps):
 
@@ -147,16 +146,24 @@ def plot_character_results(model_path, character_resps):
         
         new_x, new_y = update_compass(state, econv, socv, e0, s0, DEBUG=True)
 
+        all_vals.append((new_x, new_y))
+
         color = cmap(i % cmap.N)
 
         scatter = ax.scatter(new_x, new_y, color=color, marker='o', s=100, label=character)
 
         scatter_handles.append(scatter)
 
-    final_title = "\n".join(titles)
+    if all_vals:
+        x_coords, y_coords = zip(*all_vals)  # Unpack x and y coordinates
+
+        avg_x = sum(x_coords) / len(all_vals)
+        avg_y = sum(y_coords) / len(all_vals)
+
+    scatter = ax.scatter(avg_x, avg_y, color='red', marker='o', s=100, label='Average')
 
     # Title and legend
-    ax.set_title(f"Political Compass: {final_title}")
+    ax.set_title(f"Political Compass: {os.path.basename(model_path)}")
         
     ax.legend(handles=scatter_handles, loc='upper left')
 
