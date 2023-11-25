@@ -41,7 +41,11 @@ if __name__ == '__main__':
     verbose = arguments["--verbose"]
     llm_verbose = arguments["--llm_verbose"]
 
-    load_from_file = arguments["-l"]
+    # Check if '-l' option is specified or not
+    if "-l" in arguments:
+        load_from_file = arguments["-l"]
+    else:
+        load_from_file = None
 
     # Check if the "--prompt" key exists
     if "-p" in arguments:
