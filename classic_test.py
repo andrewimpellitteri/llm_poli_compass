@@ -10,13 +10,7 @@ from transformers import pipeline
 
 sentiment_analysis_distilbert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
-values = {0: "Strongly Disagree", 1: "Disagree", 2: "Agree", 3: "Strongly Agree"}
-
-def create_reverse_dict(dictionary):
-    reverse_dict = {value.lower(): key for key, value in dictionary.items()}
-    return reverse_dict
-
-rev_dict = create_reverse_dict(values)
+ans_to_int =  {'Strongly Disagree': 0, 'Disagree': 1, 'Agree': 2, 'Strongly Agree': 3}
 
 prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
 
@@ -153,7 +147,16 @@ def clean_answer(answer):
                 return 'disagree'
         return None
 
-def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose, runs, prompt, prompt_format, character_mode=False):
+def get_classic_test_results(
+    model_path, 
+    mlock, 
+    show_plot, 
+    verbose, 
+    llm_verbose, 
+    runs, 
+    prompt, 
+    prompt_format, 
+    character_mode=False):
 
     model_resps = []
 
@@ -161,7 +164,6 @@ def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose,
         prompt_filler = prompt
     else:
         prompt_filler = "Please provide honest and truthful responses to the following political question using one of the following options: 'Strongly Disagree', 'Disagree', 'Agree', or 'Strongly Agree.' Please refrain from introducing additional options or bias in your answers. Your candid and impartial input is appreciated."
-
 
     try:
 
@@ -184,7 +186,8 @@ def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose,
 
                 model_res = llm(final_prompt, max_tokens=200, stop=stop_tokens)
 
-                print(f"Raw Response: {model_res['choices'][0]['text'].lower()}")
+                if verbose:
+                    print(f"Raw Response: {model_res['choices'][0]['text'].lower()}")
 
                 cleaned_answer = clean_answer(model_res['choices'][0]['text'].lower())
                 
@@ -193,7 +196,7 @@ def get_classic_test_results(model_path, mlock, show_plot, verbose, llm_verbose,
                     print(cleaned_answer)
 
                 if cleaned_answer is not None:
-                    cleaned_num = rev_dict[cleaned_answer]
+                    cleaned_num = ans_to_int[cleaned_answer]
                 else:
                     cleaned_num = 2
 
